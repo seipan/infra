@@ -7,6 +7,7 @@ resources:
   - components/deployment.yaml
   - components/service.yaml
   - components/ingress.yaml
+  - components/hpa.yaml
 
 commonLabels:
   app: static-server
