@@ -1,0 +1,121 @@
+image:
+  repository: registry.k8s.io/metrics-server/metrics-server
+  # Overrides the image tag whose default is v{{ .Chart.AppVersion }}
+  tag: ""
+  pullPolicy: IfNotPresent
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: true
+
+apiService:
+  create: true
+  annotations: {}
+  insecureSkipTLSVerify: true
+  caBundle: ""
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop:
+      - ALL
+
+priorityClassName: system-cluster-critical
+
+containerPort: 10250
+
+replicas: 1
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable:
+  maxUnavailable:
+  unhealthyPodEvictionPolicy:
+
+defaultArgs:
+  - --cert-dir=/tmp
+  - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+  - --kubelet-use-node-status-port
+  - --metric-resolution=15s
+
+args: []
+
+livenessProbe:
+  httpGet:
+    path: /livez
+    port: https
+    scheme: HTTPS
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: https
+    scheme: HTTPS
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  failureThreshold: 3
+
+service:
+  type: ClusterIP
+  port: 443
+  annotations: {}
+
+addonResizer:
+  enabled: false
+  image:
+    repository: registry.k8s.io/autoscaling/addon-resizer
+    tag: 1.8.23
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault
+    capabilities:
+      drop:
+        - ALL
+  resources:
+    requests:
+      cpu: 40m
+      memory: 25Mi
+    limits:
+      cpu: 40m
+      memory: 25Mi
+  nanny:
+    cpu: 0m
+    extraCpu: 1m
+    memory: 0Mi
+    extraMemory: 2Mi
+    minClusterSize: 100
+    pollPeriod: 300000
+    threshold: 5
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 200Mi
+    # limits:
+    #   cpu:
+    #   memory:
+
+tls:
+  type: "metrics-server"
+  # Kubernetes cluster domain. Used to configure Subject Alt Names for the certificate
+  clusterDomain: cluster.local
+
+  helm:
+    lookup: true
+    certDurationDays: 365
