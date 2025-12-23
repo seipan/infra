@@ -42,4 +42,6 @@ data:
       service: http://traefik.traefik.svc.cluster.local:80
     - hostname: blog.yadon3141.com
       service: http://traefik.traefik.svc.cluster.local:80
+    - hostname: headlamp.yadon3141.com
+      service: http://traefik.traefik.svc.cluster.local:80
     - service: http_status:404
