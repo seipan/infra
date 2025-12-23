@@ -1,0 +1,103 @@
+# Default values for headlamp.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Number of desired pods
+replicaCount: 1
+
+image:
+  registry: ghcr.io
+  repository: headlamp-k8s/headlamp
+  pullPolicy: IfNotPresent
+  tag: "0.39.0"
+
+
+config:
+  inCluster: true
+  # -- base url path at which headlamp should run
+  baseURL: ""
+  pluginsDir: "/headlamp/plugins"
+  enableHelm: false
+  watchPlugins: false
+  extraArgs: []
+
+automountServiceAccountToken: true
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.(If not set and create is true, a name is generated using the fullname template)
+  name: ""
+
+clusterRoleBinding:
+  # -- Specified whether a cluster role binding should be created
+  create: true
+  # -- Set name of the Cluster Role with limited permissions from you cluster
+  # for example - clusterRoleName: user-ro
+  clusterRoleName: cluster-admin
+  # -- Annotations to add to the cluster role binding
+  annotations: {}
+
+# -- Headlamp containers Security Context
+securityContext:
+  runAsNonRoot: true
+  privileged: false
+  runAsUser: 100
+  runAsGroup: 101
+
+
+
+service:
+  # -- Annotations to add to the service
+  annotations: {}
+  # -- Kubernetes Service type
+  type: ClusterIP
+  # -- Kubernetes Service port
+  port: 80
+  # -- Kubernetes Service clusterIP
+  clusterIP: ""
+  # -- Kubernetes Service loadBalancerIP
+  loadBalancerIP: ""
+  # -- Kubernetes Service loadBalancerSourceRanges
+  loadBalancerSourceRanges: []
+  nodePort: null
+
+persistentVolumeClaim:
+  # -- Enable Persistent Volume Claim
+  enabled: false
+  # -- Annotations to add to the persistent volume claim (if enabled)
+  annotations:
+    {}
+  # -- accessModes for the persistent volume claim, eg: ReadWriteOnce, ReadOnlyMany, ReadWriteMany etc.
+  accessModes: []
+  # -- size of the persistent volume claim, eg: 10Gi. Required if enabled is true.
+  size: ""
+  # -- storageClassName for the persistent volume claim.
+  storageClassName: ""
+  # -- selector for the persistent volume claim.
+  selector: {}
+  # -- volumeMode for the persistent volume claim, eg: Filesystem, Block.
+  volumeMode: ""
+
+# -- CPU/Memory resource requests/limits
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+
+
+pluginsManager:
+  enabled: false
+
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 0
+  maxUnavailable: null
+  unhealthyPodEvictionPolicy: null
