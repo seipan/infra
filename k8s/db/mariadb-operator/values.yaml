@@ -18,7 +18,7 @@ currentNamespaceOnly: false
 ha:
   # -- Enable high availability of the controller.
   # If you enable it we recommend to set `affinity` and `pdb`
-  enabled: true
+  enabled: false
   # -- Number of replicas
   replicas: 3
 metrics:
