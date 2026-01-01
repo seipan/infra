@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/seipan/infra
     targetRevision: main
-    path: k8s/mariadb-operator
+    path: k8s/db/mariadb-operator
   destination:
     server: https://kubernetes.default.svc
     namespace: mariadb

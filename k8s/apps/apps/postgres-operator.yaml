@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/seipan/infra
     targetRevision: main
-    path: k8s/postgres-operator
+    path: k8s/db/postgres-operator
   destination:
     server: https://kubernetes.default.svc
     namespace: postgres
