@@ -4,9 +4,9 @@ kind: Kustomization
 namespace: postgres
 
 helmCharts:
-  - name: postgres-operator
+  - name: cloudnative-pg
     repo: https://cloudnative-pg.github.io/charts
-    version: cloudnative-pg-v0.27.0
+    version: 0.27.0
     releaseName: postgres-operator
     namespace: postgres
     valuesFile: values.yaml
