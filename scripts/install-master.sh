@@ -4,6 +4,7 @@ set -euo pipefail
 # バージョン設定
 CONTAINERD_VERSION="2.2.1"
 CRICTL_VERSION="v1.34.0"
+RUNC_VERSION="v1.2.6"
 ARCH="amd64"
 
 log() { echo -e "\033[1;32m[INFO]\033[0m $1"; }
@@ -45,13 +46,9 @@ sysctl --system
 
 ## runc
 if ! command -v runc &>/dev/null; then
-    log "runcをビルド・インストール..."
-    apt-get update && apt-get install -y make gcc libseccomp-dev
-    git clone --depth 1 https://github.com/opencontainers/runc
-    cd runc
-    make
-    make install
-    cd ..
+    log "runc ${RUNC_VERSION} をインストール..."
+    wget -q "https://github.com/opencontainers/runc/releases/download/${RUNC_VERSION}/runc.${ARCH}"
+    install -m 755 "runc.${ARCH}" /usr/local/sbin/runc
 else
     warn "runcは既にインストール済み: $(runc --version | head -1)"
 fi
