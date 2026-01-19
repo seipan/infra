@@ -1,0 +1,48 @@
+# Cilium values.yaml for kubeadm cluster with kube-vip
+# Only override settings that differ from defaults
+
+# Kubernetes API server endpoint (kube-vip VIP)
+k8sServiceHost: "192.168.0.30"
+k8sServicePort: "6443"
+
+# Replace kube-proxy with Cilium eBPF
+kubeProxyReplacement: "true"
+kubeProxyReplacementHealthzBindAddr: "0.0.0.0:10256"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    memory: 2Gi
+
+# IPAM configuration - must match kubeadm podSubnet
+ipam:
+  operator:
+    clusterPoolIPv4PodCIDRList: ["10.10.0.0/16"]
+    clusterPoolIPv4MaskSize: 24
+
+# Routing mode (native for on-premise without overlay)
+routingMode: "native"
+autoDirectNodeRoutes: true
+ipv4NativeRoutingCIDR: "10.10.0.0/16"
+
+# L2 announcements for LoadBalancer Services (on-premise)
+l2announcements:
+  enabled: true
+
+# Enable external IPs
+externalIPs:
+  enabled: true
+
+# Gateway API support
+gatewayAPI:
+  enabled: true
+
+# Hubble observability
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true

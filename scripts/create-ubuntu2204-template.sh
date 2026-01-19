@@ -43,3 +43,4 @@ echo "==> Done. You can now start the VM:"
 echo "    qm start ${VMID}"
 echo "==> After verification, convert to template:"
 echo "    qm template ${VMID}"
+  \
