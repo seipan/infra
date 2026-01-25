@@ -26,22 +26,22 @@ data:
 
     - hostname: argocd.yadon3141.com
       service: http://traefik.traefik.svc.cluster.local:80
-    - hostname: grafana.yadon3141.com
-      service: http://traefik.traefik.svc.cluster.local:80
-    - hostname: longhorn.yadon3141.com
-      service: http://traefik.traefik.svc.cluster.local:80
-    - hostname: minio-operator.yadon3141.com
-      service: http://traefik.traefik.svc.cluster.local:80
-    - hostname: minio.yadon3141.com
-      service: http://traefik.traefik.svc.cluster.local:80
-    - hostname: vikunja.yadon3141.com
-      service: http://traefik.traefik.svc.cluster.local:80
-    - hostname: s3.yadon3141.com
-      service: http://traefik.traefik.svc.cluster.local:80
-    - hostname: harbor.yadon3141.com
-      service: http://traefik.traefik.svc.cluster.local:80
-    - hostname: blog.yadon3141.com
-      service: http://traefik.traefik.svc.cluster.local:80
-    - hostname: headlamp.yadon3141.com
-      service: http://traefik.traefik.svc.cluster.local:80
+    # - hostname: grafana.yadon3141.com
+    #   service: http://traefik.traefik.svc.cluster.local:80
+    # - hostname: longhorn.yadon3141.com
+    #   service: http://traefik.traefik.svc.cluster.local:80
+    # - hostname: minio-operator.yadon3141.com
+    #   service: http://traefik.traefik.svc.cluster.local:80
+    # - hostname: minio.yadon3141.com
+    #   service: http://traefik.traefik.svc.cluster.local:80
+    # - hostname: vikunja.yadon3141.com
+    #   service: http://traefik.traefik.svc.cluster.local:80
+    # - hostname: s3.yadon3141.com
+    #   service: http://traefik.traefik.svc.cluster.local:80
+    # - hostname: harbor.yadon3141.com
+    #   service: http://traefik.traefik.svc.cluster.local:80
+    # - hostname: blog.yadon3141.com
+    #   service: http://traefik.traefik.svc.cluster.local:80
+    # - hostname: headlamp.yadon3141.com
+    #   service: http://traefik.traefik.svc.cluster.local:80
     - service: http_status:404
