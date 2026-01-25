@@ -1,7 +1,3 @@
 resources:
   - app-project.yaml
   - root-app.yaml
-  - apps/traefik.yaml
-  - apps/harbor.yaml
-  - apps/longhorn.yaml
-  - apps/plane.yaml
