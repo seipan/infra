@@ -8,4 +8,6 @@ resources:
 - ingress.yaml
 - tenant.yaml
 - service.yaml
-- secret.yaml
+
+generators:
+  - ksops-generator.yaml
