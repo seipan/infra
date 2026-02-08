@@ -54,26 +54,6 @@ operator:
   sidecarImage: {}
   # Install custom resource definitions
   installCRDs: true
-  ###
-  #
-  # An array of Kubernetes secrets to use for pulling images from a private ``image.repository``.
-  # Only one array element is supported at this time.
-  imagePullSecrets: [ ]
-  ###
-  #
-  # The name of a custom `Container Runtime <https://kubernetes.io/docs/concepts/containers/runtime-class/>`__ to use for the Operator pods.
-  runtimeClassName: ~
-  ###
-  # An array of `initContainers <https://kubernetes.io/docs/concepts/workloads/pods/init-containers/>`__ to start up before the Operator pods.
-  # Exercise care as ``initContainer`` failures prevent Operator pods from starting.
-  # Pass an empty array to start the Operator normally.
-  initContainers: [ ]
-  ###
-  # The number of Operator pods to deploy.
-  # Higher values increase availability in the event of worker node failures.
-  #
-  # The cluster must have sufficient number of available worker nodes to fulfill the request.
-  # Operator pods deploy with pod anti-affinity by default, preventing Kubernetes from scheduling multiple pods onto a single Worker node.
   replicaCount: 2
   ###
   # The Kubernetes `SecurityContext <https://kubernetes.io/docs/tasks/configure-pod-container/security-context/>`__ to use for deploying Operator resources.
@@ -97,40 +77,6 @@ operator:
         - ALL
     seccompProfile:
       type: RuntimeDefault
-  ###
-  # An array of `Volumes <https://kubernetes.io/docs/concepts/storage/volumes/>`__ which the Operator can mount to pods.
-  #
-  # The volumes must exist *and* be accessible to the Operator pods.
-  volumes: [ ]
-  ###
-  # An array of volume mount points associated to each Operator container.
-  #
-  # Specify each item in the array as follows:
-  #
-  # .. code-block:: yaml
-  #
-  #    volumeMounts:
-  #    - name: volumename
-  #      mountPath: /path/to/mount
-  #
-  # The ``name`` field must correspond to an entry in the ``volumes`` array.
-  volumeMounts: [ ]
-  ###
-  # Any `Node Selectors <https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/>`__ to apply to Operator pods.
-  #
-  # The Kubernetes scheduler uses these selectors to determine which worker nodes onto which it can deploy Operator pods.
-  #
-  # If no worker nodes match the specified selectors, the Operator deployment will fail.
-  nodeSelector: { }
-  ###
-  #
-  # The `Pod Priority <https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/>`__ to assign to Operator pods.
-  priorityClassName: ""
-  ###
-  #
-  # The `affinity <https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/>`__ or anti-affinity settings to apply to Operator pods.
-  #
-  # These settings determine the distribution of pods across worker nodes and can help prevent or allow colocating pods onto the same worker nodes.
   affinity:
     podAntiAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -141,24 +87,6 @@ operator:
                 values:
                   - operator
           topologyKey: kubernetes.io/hostname
-  ###
-  #
-  # An array of `Toleration labels <https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/>`__ to associate to Operator pods.
-  #
-  # These settings determine the distribution of pods across worker nodes.
-  tolerations: [ ]
-  ###
-  #
-  # An array of `Topology Spread Constraints <https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/>`__ to associate to Operator pods.
-  #
-  # These settings determine the distribution of pods across worker nodes.
-  topologySpreadConstraints: [ ]
-  ###
-  #
-  # The `Requests or Limits <https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/>`__ for resources to associate to Operator pods.
-  #
-  # These settings can control the minimum and maximum resources requested for each pod.
-  # If no worker nodes can meet the specified requests, the Operator may fail to deploy.
   resources:
     requests:
       cpu: 200m
