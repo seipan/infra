@@ -39,6 +39,10 @@ externalIPs:
 gatewayAPI:
   enabled: true
 
+# Standalone Envoy DaemonSet (explicitly enable to avoid hostPort conflict with agent)
+envoy:
+  enabled: true
+
 # Hubble observability
 hubble:
   enabled: true
