@@ -47,8 +47,7 @@ envoy:
 hubble:
   enabled: true
   tls:
-    auto:
-      method: cronJob
+    enabled: false
   relay:
     enabled: true
   ui:
