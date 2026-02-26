@@ -1,0 +1,10 @@
+apiVersion: viaduct.ai/v1
+kind: ksops
+metadata:
+    name: ksops-config
+    annotations:
+        config.kubernetes.io/function: |
+            exec:
+                path: ksops
+files:
+    - secret.yaml

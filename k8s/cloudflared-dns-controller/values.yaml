@@ -1,0 +1,56 @@
+image:
+  repository: ghcr.io/seipan/cloudflared-dns-controller
+  tag: "0.2.1"  # Defaults to Chart appVersion
+  pullPolicy: IfNotPresent
+
+# Controller settings
+controller:
+  targetName: "cloudflared"
+  targetNamespace: "cloudflared"
+  targetKey: "config.yaml"
+
+# Cloudflare credentials (two patterns supported)
+# Pattern 1: Specify values directly (Secret will be created automatically)
+# Pattern 2: Reference an existing Secret (takes precedence)
+cloudflare:
+  existingSecret: "cloudflare-credentials"
+  apiTokenKey: "api-token"
+  zoneIDKey: "zone-id"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 256Mi
+  requests:
+    cpu: 250m
+    memory: 128Mi
+
+replicaCount: 1
+leaderElection: true
+
+metrics:
+  enabled: false
+  bindAddress: ":8443"
+  secure: true
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+podAnnotations: {}
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - "ALL"
+

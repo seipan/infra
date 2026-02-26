@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: cloudflared
+
+generators:
+  - ksops-generator.yaml
+
+helmCharts:
+  - name: cloudflared-dns-controller
+    repo: https://seipan.github.io/cloudflared-dns-controller
+    version: 0.1.0
+    releaseName: cloudflared-dns-controller
+    namespace: cloudflared
+    valuesFile: values.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
