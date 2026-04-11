@@ -3,6 +3,9 @@ kind: Kustomization
 
 namespace: default
 
+generators:
+  - ksops-generator.yaml
+
 resources:
   - components/deployment.yaml
   - components/service.yaml

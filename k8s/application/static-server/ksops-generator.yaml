@@ -6,10 +6,5 @@ metadata:
         config.kubernetes.io/function: |
             exec:
                 path: ksops
-
-generators:
-  - ksops-generator.yaml
-
 files:
     - ./components/secret.yaml
-    
