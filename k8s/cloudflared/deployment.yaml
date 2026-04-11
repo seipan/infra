@@ -10,6 +10,8 @@ spec:
       app: cloudflared
   template:
     metadata:
+      annotations:
+        reloader.stakater.com/auto: "true"
       labels:
         app: cloudflared
     spec:

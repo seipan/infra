@@ -1,0 +1,42 @@
+# Generated from deployments/kubernetes/templates/chart/values.yaml.tmpl
+kubernetes:
+  host: https://kubernetes.default
+
+image:
+  name: stakater/reloader
+  repository: ghcr.io/stakater/reloader
+  tag: v1.4.14
+  pullPolicy: IfNotPresent
+
+reloader:
+  autoReloadAll: false
+  isArgoRollouts: false
+  isOpenshift: false
+  ignoreSecrets: false
+  ignoreConfigMaps: false
+
+  deployment:
+    replicas: 1
+
+    revisionHistoryLimit: 2
+
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 65534
+      seccompProfile:
+        type: RuntimeDefault
+
+    labels:
+      provider: stakater
+      group: com.stakater.platform
+      version: v1.4.14
+    
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+  webhookUrl: ""
