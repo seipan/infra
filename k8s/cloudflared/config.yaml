@@ -26,10 +26,10 @@ data:
 
     - hostname: argocd.yadon3141.com
       service: http://traefik.traefik.svc.cluster.local:80
-    # - hostname: grafana.yadon3141.com
-    #   service: http://traefik.traefik.svc.cluster.local:80
-    # - hostname: longhorn.yadon3141.com
-    #   service: http://traefik.traefik.svc.cluster.local:80
+    - hostname: grafana.yadon3141.com
+      service: http://traefik.traefik.svc.cluster.local:80
+    - hostname: longhorn.yadon3141.com
+      service: http://traefik.traefik.svc.cluster.local:80
     - hostname: minio-operator.yadon3141.com
       service: http://traefik.traefik.svc.cluster.local:80
     - hostname: minio.yadon3141.com
