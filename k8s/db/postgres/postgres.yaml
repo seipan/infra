@@ -1,0 +1,27 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: acid-minimal-cluster
+spec:
+  teamId: "acid"
+  volume:
+    size: 10Gi
+  numberOfInstances: 2
+  users:
+    authelia.authelia: []
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 1Gi
+
+  databases:
+    authelia: authelia.authelia
+    
+  postgresql:
+    version: "18"
+    parameters:
+      password_encryption: scram-sha-256
