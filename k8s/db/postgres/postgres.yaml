@@ -1,28 +1,35 @@
-apiVersion: "acid.zalan.do/v1"
-kind: postgresql
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
 metadata:
-  name: acid-minimal-cluster
+  name: pg-shared
+  namespace: postgres
 spec:
-  teamId: "acid"
-  volume:
+  instances: 2
+  imageName: ghcr.io/cloudnative-pg/postgresql:18
+
+  bootstrap:
+    initdb:
+      database: authelia
+      owner: authelia
+      dataChecksums: true
+
+  storage:
     size: 10Gi
     storageClass: longhorn
-  numberOfInstances: 2
-  users:
-    authelia.authelia: []
 
   resources:
     requests:
-      cpu: 500m
+      cpu: 1
       memory: 1Gi
     limits:
-      cpu: 2
+      cpu: 1
       memory: 1Gi
 
-  databases:
-    authelia: authelia.authelia
-    
   postgresql:
-    version: "18"
     parameters:
       password_encryption: scram-sha-256
+      shared_buffers: 256MB
+      max_slot_wal_keep_size: "2GB"
+
+  monitoring:
+    enablePodMonitor: false
