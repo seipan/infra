@@ -1,0 +1,164 @@
+rbac:
+  create: true
+
+## Create a headless service for the deployment
+headlessService: false
+
+## Should the service account be auto mounted on the pod
+automountServiceAccountToken: true
+
+## Create HorizontalPodAutoscaler object for deployment type
+#
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 5
+  targetCPU: "60"
+  targetMemory: ""
+
+podDisruptionBudget:
+  minAvailable: 1
+
+deploymentStrategy:
+  type: RollingUpdate
+
+readinessProbe:
+  httpGet:
+    path: /api/health
+    port: grafana
+
+livenessProbe:
+  httpGet:
+    path: /api/health
+    port: grafana
+  initialDelaySeconds: 60
+  timeoutSeconds: 30
+  failureThreshold: 10
+
+image:
+  registry: docker.io
+  repository: grafana/grafana
+  tag: "13.0.1"
+  pullPolicy: IfNotPresent
+
+testFramework:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bats/bats
+    tag: "1.13.0"
+  imagePullPolicy: IfNotPresent
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
+downloadDashboardsImage:
+  registry: docker.io
+  repository: curlimages/curl
+  tag: 8.20.0
+  pullPolicy: IfNotPresent
+
+downloadDashboards:
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+
+podPortName: grafana
+gossipPortName: gossip
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    kubernetes.io/ingress.class: traefik
+  path: /
+  pathType: Prefix
+  hosts:
+    - grafana.yadon3141.com
+
+resources:
+ limits:
+   cpu: 100m
+   memory: 256Mi
+ requests:
+   cpu: 100m
+   memory: 256Mi
+
+persistence:
+  type: pvc
+  enabled: true
+  storageClassName: longhorn
+  accessModes:
+    - ReadWriteOnce
+  size: 3Gi
+  finalizers:
+    - kubernetes.io/pvc-protection
+
+  inMemory:
+    enabled: false
+  lookupVolumeName: true
+
+initChownData:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: library/busybox
+    tag: "1.37.0"
+    pullPolicy: IfNotPresent
+  resources: {}
+  securityContext:
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+    runAsUser: 0
+    seccompProfile:
+      type: RuntimeDefault
+    capabilities:
+      add:
+        - CHOWN
+      drop:
+        - ALL
+
+admin:
+  existingSecret: "grafana-admin"
+  userKey: admin-user
+  passwordKey: admin-password
+
+## Sidecars that collect the configmaps with specified label and stores the included files them into the respective folders
+## Requires at least Grafana 5 to work and can't be used together with parameters dashboardProviders, datasources and dashboards
+sidecar:
+  image:
+    registry: quay.io
+    repository: kiwigrid/k8s-sidecar
+    tag: 2.7.1
+  imagePullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  enableUniqueFilenames: false
+  
+revisionHistoryLimit: 3

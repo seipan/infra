@@ -3,8 +3,13 @@ kind: Kustomization
 
 namespace: grafana
 
-resources:
-  - components/deployment.yaml  
-  - components/service.yaml  
-  - components/pvc.yaml 
-  - components/ingress.yaml
+generators:
+  - ksops-generator.yaml
+
+helmCharts:
+  - name: grafana
+    repo: https://grafana-community.github.io/helm-charts
+    version: 1.10.0
+    releaseName: grafana
+    namespace: grafana
+    valuesFile: values.yaml
