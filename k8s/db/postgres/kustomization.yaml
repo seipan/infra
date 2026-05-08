@@ -5,3 +5,7 @@ namespace: postgres
 
 resources:
 - postgres.yaml
+- grafana/database.yaml
+
+generators:
+  - ksops-generator.yaml
