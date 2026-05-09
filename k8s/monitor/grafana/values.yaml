@@ -99,14 +99,7 @@ resources:
    memory: 256Mi
 
 persistence:
-  type: pvc
-  enabled: true
-  storageClassName: longhorn
-  accessModes:
-    - ReadWriteOnce
-  size: 3Gi
-  finalizers:
-    - kubernetes.io/pvc-protection
+  enabled: false
 
   inMemory:
     enabled: false
@@ -162,3 +155,11 @@ sidecar:
   enableUniqueFilenames: false
   
 revisionHistoryLimit: 3
+
+envFromSecret: grafana-db
+grafana.ini:
+  database:
+    type: postgres
+    host: pg-shared-rw.postgres.svc.cluster.local
+    name: grafana
+    ssl_mode: disable
