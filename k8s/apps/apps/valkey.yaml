@@ -11,7 +11,7 @@ spec:
     path: k8s/db/valkey
   destination:
     server: https://kubernetes.default.svc
-    namespace: kube-system
+    namespace: valkey
   syncPolicy:
     automated:
       prune: true
