@@ -1,0 +1,66 @@
+image:
+  registry: "docker.io"
+  repository: valkey/valkey
+  pullPolicy: IfNotPresent
+  tag: "9.0.2"
+
+nameOverride: ""
+fullnameOverride: ""
+
+clusterDomain: cluster.local
+
+serviceAccount:
+  create: true
+
+podSecurityContext:
+  fsGroup: 1000
+  runAsUser: 1000
+  runAsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+service:
+  type: ClusterIP
+  port: 6379
+
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+dataStorage:
+  enabled: true
+  requestedSize: "1Gi"
+  className: "longhorn"
+
+auth:
+  enabled: true
+  usersExistingSecret: "valkey-auth"
+  aclUsers:
+    default:
+      permissions: 'off ~* &* +@all'
+      passwordKey: "admin-pwd"
+    authelia:
+      permissions: '~* &* +@all -@dangerous'
+      passwordKey: "authelia-pwd"
+    replicator:
+      permissions: '+psync +replconf +ping +info'
+      passwordKey: "replicator-pwd"
+
+replica:
+  enabled: true
+  replicas: 1
+  replicationUser: "replicator"
+  persistence:
+    size: "1Gi"
+    storageClass: "longhorn"
+    accessModes:
+      - ReadWriteOnce
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
