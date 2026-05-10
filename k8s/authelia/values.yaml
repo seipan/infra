@@ -38,13 +38,6 @@ ingress:
     enabled: true
     entryPoints:
       - websecure
-    middlewares:
-      auth:
-        authResponseHeaders:
-          - 'Remote-User'
-          - 'Remote-Name'
-          - 'Remote-Email'
-          - 'Remote-Groups'
     tls:
       domainsOverride:
         - main: 'auth.yadon3141.com'
