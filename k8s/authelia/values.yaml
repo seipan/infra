@@ -33,14 +33,7 @@ service:
   port: 80
 
 ingress:
-  enabled: true
-  traefikCRD:
-    enabled: true
-    entryPoints:
-      - websecure
-    tls:
-      domainsOverride:
-        - main: 'auth.yadon3141.com'
+  enabled: false
 
 configMap:
   server:
