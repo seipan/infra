@@ -6,6 +6,8 @@ image:
 pod:
   kind: Deployment
   replicas: 2
+  annotations:
+    reloader.stakater.com/auto: "true"
   resources:
     requests:
       cpu: '100m'
@@ -13,7 +15,6 @@ pod:
     limits:
       memory: '256Mi'
 
-  # ファイル認証バックエンドの users_database.yml を Secret から /config 配下にマウント
   extraVolumeMounts:
     - name: users-database
       mountPath: /config/users_database.yml
@@ -31,7 +32,6 @@ service:
   type: ClusterIP
   port: 80
 
-# Traefik 3.x CRD: ForwardAuth Middleware + Authelia 自身の IngressRoute を自動生成
 ingress:
   enabled: true
   traefikCRD:
@@ -62,7 +62,6 @@ configMap:
       enabled: false   # Prometheus 連携時は true + 別 Service / ServiceMonitor
 
   ntp:
-    # 外向き UDP 123 が通らない環境だと起動失敗するので無効化推奨
     disable_startup_check: true
 
   totp:
@@ -77,7 +76,8 @@ configMap:
       jwt_lifespan: '5 minutes'
       jwt_algorithm: 'HS256'
       secret:
-        secret_name: ~   # secret.existingSecret から path: identity_validation.reset_password.jwt.hmac.key
+        secret_name: ~
+        path: 'identity_validation.reset_password.jwt.hmac.key'
 
   authentication_backend:
     refresh_interval: '5 minutes'
@@ -93,12 +93,7 @@ configMap:
     rules:
       - domain: 'auth.yadon3141.com'
         policy: 'bypass'
-      # - domain: 'grafana.yadon3141.com'
-      #   policy: 'one_factor'
-      # - domain: 'longhorn.yadon3141.com'
-      #   policy: 'two_factor'
-      #   subject: 'group:admins'
-
+    
   session:
     name: 'authelia_session'
     same_site: 'lax'
@@ -112,6 +107,15 @@ configMap:
         subdomain: 'auth'
         authelia_url: 'https://auth.yadon3141.com'
         default_redirection_url: 'https://yadon3141.com'
+    redis:
+      enabled: true
+      host: 'valkey.valkey.svc.cluster.local'
+      port: 6379
+      username: 'authelia'
+      database_index: 0
+      password:
+        secret_name: ~
+        path: 'session.redis.password.txt'
 
   regulation:
     modes:
@@ -122,54 +126,26 @@ configMap:
 
   storage:
     encryption_key:
-      secret_name: ~   # path: storage.encryption.key
-    local:
+      secret_name: ~
+      path: 'storage.encryption.key'
+    postgres:
       enabled: true
-      path: '/config/db.sqlite3'
-    # 本番化時は postgres に置換:
-    # postgres:
-    #   enabled: true
-    #   address: 'tcp://postgres.databases.svc.cluster.local:5432'
-    #   database: 'authelia'
-    #   username: 'authelia'
-    #   password:
-    #     secret_name: ~   # path: storage.postgres.password.txt
+      address: 'tcp://pg-shared-rw.postgres.svc.cluster.local:5432'
+      database: 'authelia'
+      username: 'authelia'
+      password:
+        secret_name: ~
+        path: 'storage.postgres.password.txt'
 
   notifier:
     disable_startup_check: false
-    # SMTP 未整備のうちは filesystem に書き出して exec で取得
     filesystem:
       enabled: true
       filename: '/config/notification.txt'
-    # smtp:
-    #   enabled: true
-    #   address: 'submission://smtp.example.com:587'
-    #   sender: 'Authelia <admin@yadon3141.com>'
-    #   username: ''
-    #   password:
-    #     secret_name: ~   # path: notifier.smtp.password.txt
 
-  # OIDC Provider: Grafana / Harbor / Headlamp などを SSO 連携する場合に有効化
-  identity_providers:
-    oidc:
-      enabled: false
-      # hmac_secret:
-      #   secret_name: ~   # path: identity_providers.oidc.hmac.key
-      # jwks:
-      #   - key:
-      #       secret_name: ~   # 例: oidc-jwks-rsa
-      #       path: identity_providers.oidc.jwks.0.key
-      # clients: []
-
-# ksops で生成した既存 Secret を /secrets にマウント
 secret:
   existingSecret: 'authelia-secrets'
   mountPath: '/secrets'
 
-# SQLite データ永続化。postgres に切替えたら enabled: false
 persistence:
-  enabled: true
-  storageClass: 'longhorn'
-  accessModes:
-    - 'ReadWriteOnce'
-  size: '1Gi'
+  enabled: false

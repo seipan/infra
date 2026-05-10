@@ -7,5 +7,6 @@ metadata:
             exec:
                 path: ksops
 files:
-    - ./grafana/user-secret.yaml
-    - ./authelia/user-secret.yaml
+    - ./secrets/authelia-users.yaml
+    - ./secrets/authelia-secrets.yaml
+    

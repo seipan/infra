@@ -41,3 +41,8 @@ spec:
       login: true
       passwordSecret:
         name: grafana-db-user
+    - name: authelia
+      ensure: present
+      login: true
+      passwordSecret:
+        name: authelia-db-user
