@@ -4,6 +4,7 @@ deployment:
 providers:
   kubernetesCRD:
     enabled: true
+    allowCrossNamespace: true
   kubernetesIngress:
     enabled: true
     publishedService:
