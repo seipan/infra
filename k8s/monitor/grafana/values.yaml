@@ -81,14 +81,7 @@ service:
   targetPort: 3000
 
 ingress:
-  enabled: true
-  ingressClassName: traefik
-  annotations:
-    kubernetes.io/ingress.class: traefik
-  path: /
-  pathType: Prefix
-  hosts:
-    - grafana.yadon3141.com
+  enabled: false
 
 resources:
  limits:
@@ -158,8 +151,22 @@ revisionHistoryLimit: 3
 
 envFromSecret: grafana-db
 grafana.ini:
+  server:
+    root_url: 'https://grafana.yadon3141.com'
+  auth:
+    disable_login_form: true
+    signout_redirect_url: 'https://auth.yadon3141.com/logout'
+  auth.proxy:
+    enabled: true
+    header_name: 'Remote-Email'
+    header_property: email
+    auto_sign_up: true
+    headers: 'Name:Remote-Name Email:Remote-Email Groups:Remote-Groups'
+    whitelist: '127.0.0.1, ::1'
   database:
     type: postgres
     host: pg-shared-rw.postgres.svc.cluster.local
     name: grafana
     ssl_mode: disable
+  users:
+    auto_assign_org_role: Editor

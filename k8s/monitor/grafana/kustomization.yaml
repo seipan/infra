@@ -3,6 +3,9 @@ kind: Kustomization
 
 namespace: grafana
 
+resources:
+  - ingress.yaml
+
 generators:
   - ksops-generator.yaml
 
