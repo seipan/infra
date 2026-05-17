@@ -5,6 +5,8 @@ namespace: authelia
 
 resources:
   - namespace.yaml
+  - ingress.yaml
+  - middleware.yaml
 
 generators:
   - ksops-generator.yaml
