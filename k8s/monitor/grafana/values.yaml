@@ -162,7 +162,7 @@ grafana.ini:
     header_property: email
     auto_sign_up: true
     headers: 'Name:Remote-Name Email:Remote-Email Groups:Remote-Groups'
-    whitelist: '10.10.0.0/16
+    whitelist: '10.10.0.0/16'
   database:
     type: postgres
     host: pg-shared-rw.postgres.svc.cluster.local
