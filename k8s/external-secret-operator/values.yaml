@@ -1,0 +1,102 @@
+installCRDs: true
+
+replicaCount: 3
+
+leaderElect: true
+
+image:
+  repository: oci.external-secrets.io/external-secrets/external-secrets
+  tag: v2.8.0
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: external-secrets
+
+serviceMonitor:
+  enabled: false
+
+metrics:
+  service:
+    enabled: true
+    port: 8080
+
+webhook:
+  create: true
+  replicaCount: 3
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: external-secrets-webhook
+
+  readinessProbe:
+    enabled: true
+  livenessProbe:
+    enabled: true
+
+  metrics:
+    service:
+      enabled: true
+
+certController:
+  create: true
+  replicaCount: 2
+
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+  podDisruptionBudget:
+    enabled: true
+    minAvailable: 1
+
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: ScheduleAnyway
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/name: external-secrets-cert-controller
+
+  readinessProbe:
+    enabled: true
+
+  metrics:
+    service:
+      enabled: true
