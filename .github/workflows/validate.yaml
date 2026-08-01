@@ -7,8 +7,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: validate manifests in dir1 and dir2
-        uses: makocchi-git/actions-k8s-manifests-validate-kubeval@v1.0.1
-        with:
-          files: k8s
-          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: install kubeconform
+        run: |
+          curl -sL https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz \
+            | tar -xz -C /usr/local/bin kubeconform
+
+      - name: validate manifests
+        run: |
+          find k8s -name "*.yaml" \
+            ! -name "values.yaml" \
+            ! -name "kustomization.yaml" \
+            ! -name "ksops-generator.yaml" \
+            | xargs kubeconform \
+                -ignore-missing-schemas \
+                -strict \
+                -schema-location default \
+                -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+                -summary

@@ -5,9 +5,7 @@ namespace: grafana
 
 resources:
   - ingress.yaml
-
-generators:
-  - ksops-generator.yaml
+  - external-secret.yaml
 
 helmCharts:
   - name: grafana

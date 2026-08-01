@@ -3,8 +3,9 @@ kind: Kustomization
 
 namespace: harbor
 
-generators:
-  - ksops-generator.yaml
+resources:
+  - ingress.yaml
+  - external-secret.yaml
 
 helmCharts:
   - name: harbor
@@ -13,6 +14,3 @@ helmCharts:
     releaseName: harbor
     namespace: harbor
     valuesFile: values.yaml
-
-resources:
-  - ingress.yaml
