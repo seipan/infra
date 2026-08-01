@@ -1,59 +1,12 @@
 configs:
   cm:
-    url: https://argocd.yadon3141.com 
-    kustomize.buildOptions: "--enable-helm --enable-alpha-plugins --enable-exec"
+    url: https://argocd.yadon3141.com
+    kustomize.buildOptions: "--enable-helm"
 
 repoServer:
   enabled: true
   replicas: 2
 
-  volumes:
-    - name: custom-tools
-      emptyDir: {}
-    - name: sops-age
-      secret:
-        secretName: sops-age-key
-
-  initContainers:
-    - name: install-ksops
-      image: viaductoss/ksops:v4.3.3
-      command: ["/bin/sh", "-c"]
-      args:
-        - |
-          echo "Installing KSOPS...";
-          mv ksops /custom-tools/;
-          mv kustomize /custom-tools/;
-          echo "Done.";
-      volumeMounts:
-        - mountPath: /custom-tools
-          name: custom-tools
-    - name: install-sops
-      image: alpine/curl:8.12.0
-      command: ["/bin/sh", "-c"]
-      args:
-        - |
-          echo "Installing SOPS...";
-          curl -L https://github.com/getsops/sops/releases/download/v3.9.4/sops-v3.9.4.linux.amd64 -o sops;
-          chmod +x sops;
-          mv sops /custom-tools/;
-          echo "Done.";
-      volumeMounts:
-        - mountPath: /custom-tools
-          name: custom-tools
-
-  volumeMounts:
-    - mountPath: /usr/local/bin/kustomize
-      name: custom-tools
-      subPath: kustomize
-    - mountPath: /usr/local/bin/ksops
-      name: custom-tools
-      subPath: ksops
-    - mountPath: /usr/local/bin/sops
-      name: custom-tools
-      subPath: sops
-    - name: sops-age
-      mountPath: /home/argocd/.config/sops/age/
-        
 server:
   extraArgs:
     - --insecure

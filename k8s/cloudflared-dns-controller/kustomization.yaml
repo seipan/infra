@@ -3,8 +3,8 @@ kind: Kustomization
 
 namespace: cloudflared
 
-generators:
-  - ksops-generator.yaml
+resources:
+  - external-secret.yaml
 
 helmCharts:
   - name: cloudflared-dns-controller
@@ -13,6 +13,3 @@ helmCharts:
     releaseName: cloudflared-dns-controller
     namespace: cloudflared
     valuesFile: values.yaml
-
-generatorOptions:
-  disableNameSuffixHash: true

@@ -7,9 +7,7 @@ resources:
   - namespace.yaml
   - ingress.yaml
   - middleware.yaml
-
-generators:
-  - ksops-generator.yaml
+  - external-secret.yaml
 
 helmCharts:
   - name: authelia

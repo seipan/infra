@@ -3,5 +3,5 @@ kind: Kustomization
 
 namespace: default
 
-generators:
-  - ksops-generator.yaml
+resources:
+  - external-secret.yaml
