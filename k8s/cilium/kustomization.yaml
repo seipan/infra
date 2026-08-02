@@ -6,6 +6,7 @@ namespace: cilium
 resources:
   - l2-policy.yaml
   - lb-pool.yaml
+  - namespace.yaml
 
 helmCharts:
   - name: cilium
