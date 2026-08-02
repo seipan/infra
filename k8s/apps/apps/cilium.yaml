@@ -11,7 +11,7 @@ spec:
     path: k8s/cilium
   destination:
     server: https://kubernetes.default.svc
-    namespace: kube-system
+    namespace: cilium
   syncPolicy:
     automated:
       prune: true

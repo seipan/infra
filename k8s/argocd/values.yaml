@@ -5,10 +5,26 @@ configs:
   params:
     controller.diff.server.side: "true"
 
-repoServer:
+redis-ha:
   enabled: true
-  replicas: 2
+
+controller:
+  replicas: 1
 
 server:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
   extraArgs:
     - --insecure
+
+repoServer:
+  enabled: true
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+
+applicationSet:
+  replicas: 2
