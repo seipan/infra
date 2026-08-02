@@ -2,6 +2,8 @@ configs:
   cm:
     url: https://argocd.yadon3141.com
     kustomize.buildOptions: "--enable-helm"
+  params:
+    controller.diff.server.side: "true"
 
 repoServer:
   enabled: true
