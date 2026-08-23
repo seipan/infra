@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: proxmox-hosts
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/seipan/infra
+    targetRevision: main
+    path: k8s/proxmox-hosts
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: proxmox
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

@@ -82,6 +82,9 @@ configMap:
       - domain: 'grafana.yadon3141.com'
         policy: 'one_factor'
         subject: 'group:dev'
+      - domain: 'proxmox.yadon3141.com'
+        policy: 'one_factor'
+        subject: 'group:dev'
     
   session:
     name: 'authelia_session'

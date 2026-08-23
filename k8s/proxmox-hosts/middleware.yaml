@@ -1,0 +1,8 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: proxmox-retry
+  namespace: proxmox
+spec:
+  retry:
+    attempts: 3
