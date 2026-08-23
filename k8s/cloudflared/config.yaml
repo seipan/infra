@@ -46,6 +46,8 @@ data:
       service: http://traefik.traefik.svc.cluster.local:80
     - hostname: auth.yadon3141.com
       service: http://traefik.traefik.svc.cluster.local:80
+    - hostname: proxmox.yadon3141.com
+      service: http://traefik.traefik.svc.cluster.local:80
     # kube-apiserver over raw TCP. TLS is end-to-end between kubectl and the
     # apiserver, so cloudflared never sees the credentials. Reachable only via
     # `cloudflared access tcp --hostname k8s.yadon3141.com --url 127.0.0.1:6443`,
