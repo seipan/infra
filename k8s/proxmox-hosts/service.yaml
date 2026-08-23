@@ -19,8 +19,14 @@ metadata:
 addressType: IPv4
 endpoints:
   - addresses: ["192.168.0.11"] # prox1
+    conditions:
+      ready: true
   - addresses: ["192.168.0.12"] # prox2
+    conditions:
+      ready: true
   - addresses: ["192.168.0.13"] # prox3
+    conditions:
+      ready: true
 ports:
   - name: https
     port: 8006
