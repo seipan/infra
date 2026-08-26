@@ -1,0 +1,40 @@
+# Tunnels the game (8211/udp) + query (27015/udp) ports out via playit.gg
+# instead of a router port-forward - this ISP's connection type is v6プラス
+# (MAP-E), which only allows inbound traffic on ~240 ISP-assigned ports you
+# can't choose, so a normal port-forward for 8211/27015 doesn't work. The
+# agent only makes outbound connections to playit's relay, bypassing that
+# restriction entirely. Local target addresses (pointing at palworld-svc)
+# are configured in the playit.gg web dashboard after the agent connects,
+# not here.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playit-agent
+  namespace: palworld
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playit-agent
+  template:
+    metadata:
+      labels:
+        app: playit-agent
+    spec:
+      containers:
+      - name: playit-agent
+        image: ghcr.io/playit-cloud/playit-agent:latest
+        imagePullPolicy: Always
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: palworld-secrets
+              key: playitSecretKey
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
