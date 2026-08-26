@@ -14,3 +14,21 @@ helmCharts:
 resources:
 - namespace.yaml
 - external-secret.yaml
+- storageclass.yaml
+
+patches:
+- target:
+    kind: Deployment
+    name: palworld-server
+  patch: |-
+    - op: add
+      path: /spec/template/spec/affinity
+      value:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - prd-w3

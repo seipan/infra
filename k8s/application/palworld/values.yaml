@@ -2,22 +2,30 @@
 # thijsvanloef/palworld-server-docker: https://github.com/thijsvanloef/palworld-server-docker)
 #
 # Official system requirements for a dedicated server are 4 cores / 16GB+ RAM.
-# This home-lab cluster's worker nodes only have 4 allocatable cores / ~8Gi each,
-# so resources below are sized down accordingly and max_players is capped at 8.
-# Bump `server.resources` and `server.config.max_players` if you add more capacity.
+# Pod is pinned to prd-w3 (see kustomization.yaml's nodeAffinity patch), the
+# one node in this cluster with 16Gi allocatable memory, so resources below
+# get close to the recommended spec. Bump `server.resources` and
+# `server.config.max_players` further if you add more capacity.
 server:
   resources:
     requests:
       cpu: 2
-      memory: "6Gi"
+      memory: "8Gi"
     limits:
       cpu: 4
-      memory: "8Gi"
+      memory: "12Gi"
 
   storage:
     main:
       size: 15Gi
-      storageClassName: "longhorn"
+      # Dedicated StorageClass (storageclass.yaml) that pins Longhorn
+      # replicas to the `bigdisk`-tagged nodes (newpi1/newpi2, ~250Gi disks)
+      # instead of the default 3-way spread across every node - the other
+      # nodes, including prd-w3 where this pod runs, only have ~31Gi root
+      # disks and got DiskPressure-evicted once save data grew. Longhorn
+      # volumes attach fine over the network, so storage and compute don't
+      # need to be on the same node.
+      storageClassName: "longhorn-palworld"
 
   # Always pull the `latest` tag so the container image itself stays current.
   # UPDATE_ON_BOOT (below) separately keeps the Palworld game binary itself
