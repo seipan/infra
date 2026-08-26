@@ -1,0 +1,91 @@
+# Helm chart: https://github.com/Twinki14/palworld-server-chart (wraps
+# thijsvanloef/palworld-server-docker: https://github.com/thijsvanloef/palworld-server-docker)
+#
+# Official system requirements for a dedicated server are 4 cores / 16GB+ RAM.
+# This home-lab cluster's worker nodes only have 4 allocatable cores / ~8Gi each,
+# so resources below are sized down accordingly and max_players is capped at 8.
+# Bump `server.resources` and `server.config.max_players` if you add more capacity.
+server:
+  resources:
+    requests:
+      cpu: 2
+      memory: "6Gi"
+    limits:
+      cpu: 4
+      memory: "8Gi"
+
+  storage:
+    main:
+      size: 15Gi
+      storageClassName: "longhorn"
+
+  # Always pull the `latest` tag so the container image itself stays current.
+  # UPDATE_ON_BOOT (below) separately keeps the Palworld game binary itself
+  # up to date via SteamCMD on every restart.
+  image:
+    repository: thijsvanloef/palworld-server-docker
+    tag: latest
+    imagePullPolicy: Always
+
+  # Exposed on the LAN via Cilium L2 announcement (see k8s/cilium/l2-policy.yaml,
+  # which watches for the `expose: lb` label). Only game + query ports are
+  # exposed externally; RCON stays cluster-internal (use `kubectl exec` /
+  # `kubectl port-forward` for admin access).
+  service:
+    type: LoadBalancer
+    labels:
+      expose: "lb"
+    ports:
+    - name: game
+      port: 8211
+      protocol: UDP
+      targetPort: 8211
+    - name: query
+      port: 27015
+      protocol: UDP
+      targetPort: 27015
+
+  config:
+    max_players: 8
+    multithreading: true
+    server_name: "Homelab Palworld"
+    server_description: "Home lab dedicated Palworld server"
+    timezone: "Asia/Tokyo"
+
+    # Keeps the game server binary itself updated on every boot.
+    update_on_boot: true
+
+    # RCON secures in-game admin access. The chart can auto-generate a random
+    # password itself, but ArgoCD re-renders this chart from scratch on every
+    # sync (kustomize's helm inflator runs `helm template`, not a stateful
+    # `helm install`), so an auto-generated password would rotate - and force
+    # a pod restart - on every reconciliation. Source it from 1Password
+    # instead (see external-secret.yaml); this repo is public, so we don't
+    # want a plaintext password in git either.
+    rcon:
+      enable: true
+      externalPassword:
+        name: palworld-secrets
+        key: rconPassword
+
+    # Not listed on Steam's public community server browser - this server is
+    # reachable only on the home LAN, so no join password is required.
+    community:
+      enable: false
+
+    # Extra env vars not modeled directly by the chart - see the docker image
+    # README for the full list: https://github.com/thijsvanloef/palworld-server-docker
+    env:
+      # Native in-container auto-reboot (simpler than the chart's own
+      # daily_reboot CronJob, which needs extra RBAC to call the k8s API).
+      # Reboots at 04:00 JST (19:00 UTC) and skips the reboot if anyone's online.
+      AUTO_REBOOT_ENABLED: "true"
+      AUTO_REBOOT_CRON_EXPRESSION: "0 19 * * *"
+      AUTO_REBOOT_WARN_MINUTES: "5"
+      AUTO_REBOOT_EVEN_IF_PLAYERS_ONLINE: "false"
+
+      # Daily backups (00:00 UTC / 09:00 JST) pruned after 7 days so they
+      # don't slowly fill the 15Gi volume they share with the save data.
+      BACKUP_ENABLED: "true"
+      DELETE_OLD_BACKUPS: "true"
+      OLD_BACKUP_DAYS: "7"
