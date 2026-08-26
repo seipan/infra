@@ -33,3 +33,14 @@ patches:
                 operator: In
                 values:
                 - prd-w3
+# Pin the ClusterIP too - the playit.gg tunnel's "Local IP" is configured
+# in playit's dashboard (outside this repo) against this exact address, so
+# it needs to stay stable across any Service recreate, same reasoning as
+# the LB IP pin in values.yaml.
+- target:
+    kind: Service
+    name: palworld-svc
+  patch: |-
+    - op: add
+      path: /spec/clusterIP
+      value: 10.110.104.151
