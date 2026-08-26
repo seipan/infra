@@ -45,6 +45,10 @@ server:
     type: LoadBalancer
     labels:
       expose: "lb"
+    # Pin the LB IP so it survives a Service recreate - it's port-forwarded
+    # from the router (outside this repo), so it needs to stay stable.
+    annotations:
+      io.cilium/lb-ipam-ips: "192.168.0.170"
     ports:
     - name: game
       port: 8211
