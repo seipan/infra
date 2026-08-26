@@ -15,6 +15,7 @@ resources:
 - namespace.yaml
 - external-secret.yaml
 - storageclass.yaml
+- playit-agent.yaml
 
 patches:
 - target:
