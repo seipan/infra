@@ -1,0 +1,24 @@
+# Same as the default `longhorn` StorageClass, but replicas are pinned to
+# the `bigdisk`-tagged Longhorn nodes (newpi1/newpi2, ~250Gi disks) instead
+# of the default 3-way spread across every node - the other nodes (prd-*)
+# only have ~31Gi root disks and got DiskPressure-evicted once Palworld's
+# save data grew. numberOfReplicas is 2 since there are only 2 bigdisk
+# nodes today.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-palworld
+provisioner: driver.longhorn.io
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+parameters:
+  backupTargetName: default
+  dataEngine: v1
+  dataLocality: disabled
+  disableRevisionCounter: "true"
+  fromBackup: ""
+  fsType: ext4
+  numberOfReplicas: "2"
+  nodeSelector: "bigdisk"
+  staleReplicaTimeout: "30"
+  unmapMarkSnapChainRemoved: ignored
