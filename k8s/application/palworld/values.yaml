@@ -36,9 +36,11 @@ server:
     imagePullPolicy: Always
 
   # Exposed on the LAN via Cilium L2 announcement (see k8s/cilium/l2-policy.yaml,
-  # which watches for the `expose: lb` label). Only game + query ports are
-  # exposed externally; RCON stays cluster-internal (use `kubectl exec` /
-  # `kubectl port-forward` for admin access).
+  # which watches for the `expose: lb` label) at 192.168.0.170, then further
+  # exposed to the internet via a router port-forward (UDP 8211 + 27015 ->
+  # 192.168.0.170) - that part lives outside this repo/cluster. Only game +
+  # query ports are exposed; RCON stays cluster-internal (use `kubectl exec`
+  # / `kubectl port-forward` for admin access).
   service:
     type: LoadBalancer
     labels:
@@ -76,10 +78,18 @@ server:
         name: palworld-secrets
         key: rconPassword
 
-    # Not listed on Steam's public community server browser - this server is
-    # reachable only on the home LAN, so no join password is required.
+    # This server is exposed to the internet (router port-forward: UDP
+    # 8211 + 27015 -> 192.168.0.170), so a join password is required. The
+    # chart only wires up SERVER_PASSWORD when community.enable is true -
+    # that also lists the server in Steam's public browser, but since it's
+    # password-protected that's not a real exposure. Password is sourced
+    # from 1Password the same way as rcon's, for the same determinism +
+    # public-repo reasons.
     community:
-      enable: false
+      enable: true
+      externalPassword:
+        name: palworld-secrets
+        key: serverPassword
 
     # Extra env vars not modeled directly by the chart - see the docker image
     # README for the full list: https://github.com/thijsvanloef/palworld-server-docker
