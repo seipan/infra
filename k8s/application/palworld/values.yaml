@@ -98,6 +98,8 @@ server:
     # Extra env vars not modeled directly by the chart - see the docker image
     # README for the full list: https://github.com/thijsvanloef/palworld-server-docker
     env:
+      IS_PVP: "true"
+
       # Native in-container auto-reboot (simpler than the chart's own
       # daily_reboot CronJob, which needs extra RBAC to call the k8s API).
       # Reboots at 04:00 JST (19:00 UTC) and skips the reboot if anyone's online.
