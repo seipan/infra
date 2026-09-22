@@ -2,21 +2,33 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
+	"net/http"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/sirupsen/logrus"
 )
 
+// ErrNotFound reports that the object, or the bucket holding it, does not exist.
+var ErrNotFound = errors.New("object not found")
+
 type MinioStorage struct {
-	client *minio.Client
+	core   *minio.Core
 	logger *logrus.Logger
 }
 
+// Object is an open object: the metadata returned with the GET response, plus
+// its body. Body is owned by the caller and must be closed.
+type Object struct {
+	Info minio.ObjectInfo
+	Body io.ReadCloser
+}
+
 func NewMinioStorage(endpoint, accessKey, secretKey string, useSSL bool, logger *logrus.Logger) (*MinioStorage, error) {
-	minioClient, err := minio.New(endpoint, &minio.Options{
+	core, err := minio.NewCore(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
 		Secure: useSSL,
 	})
@@ -25,20 +37,26 @@ func NewMinioStorage(endpoint, accessKey, secretKey string, useSSL bool, logger 
 	}
 
 	return &MinioStorage{
-		client: minioClient,
+		core:   core,
 		logger: logger,
 	}, nil
 }
 
-func (m *MinioStorage) GetObject(ctx context.Context, bucket, objectName string) (io.ReadCloser, error) {
-	object, err := m.client.GetObject(ctx, bucket, objectName, minio.GetObjectOptions{})
+// GetObject fetches an object in a single round trip, reporting ErrNotFound if
+// it is missing.
+//
+// The Core client is used rather than the high level one on purpose: the latter
+// returns a lazy handle, and asking that handle for metadata before reading
+// issues a StatObject of its own, so serving one file would cost a HEAD plus a
+// GET. Core issues the GET directly and hands back the metadata that came with
+// the response.
+func (m *MinioStorage) GetObject(ctx context.Context, bucket, objectName string) (*Object, error) {
+	body, info, _, err := m.core.GetObject(ctx, bucket, objectName, minio.GetObjectOptions{})
 	if err != nil {
+		if minio.ToErrorResponse(err).StatusCode == http.StatusNotFound {
+			return nil, ErrNotFound
+		}
 		return nil, fmt.Errorf("failed to get object: %w", err)
 	}
-	return object, nil
-}
-
-func (m *MinioStorage) ObjectExists(ctx context.Context, bucket, objectName string) bool {
-	_, err := m.client.StatObject(ctx, bucket, objectName, minio.StatObjectOptions{})
-	return err == nil
+	return &Object{Info: info, Body: body}, nil
 }
